@@ -1,3 +1,5 @@
+# $Id$
+
 NAME = Besch
 INSTALLDIR = SYS:Games
 
