@@ -1,17 +1,21 @@
-# $Id$
+# $Id: Makefile,v 39.2 1995/04/25 02:04:18 mbayne Exp mbayne $
 
-NAME = Besch
-INSTALLDIR = SYS:Games
+NAME       = Besch
+INSTALLDIR = SYS:Games/Misc
 
-CC = SC
-LD = SLink
-RM = Delete
-CP = Copy
+CC      = SC
+LD      = SLink
+RM      = Delete
+CP      = Copy
 VERSION = 38
 
-OBJS = resource.o card.o deck.o stack.o opponent.o board.o criterion.o move.o moveinfo.o menus.o main.o
+OBJS1 = resource.o card.o deck.o stack.o opponent.o board.o criterion.o move.o
+OBJS2 = moveinfo.o menus.o main.o
+OBJS  = $(OBJS1) $(OBJS2)
 
-all: $(OBJS)
+all: $(NAME)
+
+$(NAME): $(OBJS)
 	$(CC) LINK NODEBUG $(OBJS) PNAME $(NAME)
 	$(RM) FORCE QUIET $(NAME).lnk
 
@@ -22,7 +26,7 @@ main.o: main.c
 	$(CC) $*.c
 
 clean:
-	$(RM) FORCE QUIET $(OBJS)
+	$(RM) FORCE QUIET $(OBJS) $(NAME)
 
 genprotos:
 	$(CC) GPROTO GPFILE=protos/resource_protos.h resource.c
@@ -39,6 +43,7 @@ genprotos:
 
 install: all
 	$(CP) $(NAME) $(INSTALLDIR)
+	$(CP) $(NAME).info $(INSTALLDIR)
 
 bumprev:
 	BumpRev $(VERSION) $(NAME)
