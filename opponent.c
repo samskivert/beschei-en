@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: opponent.c,v 39.1 1995/04/25 01:50:12 mbayne Exp mbayne $
  *
  * The information in this file was created by Michael D. Bayne. This
  * information is in the public domain. You are permitted to reuse, rewrite,
@@ -7,7 +7,10 @@
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
  * 
- * $Log$
+ * $Log: opponent.c,v $
+ * Revision 39.1  1995/04/25  01:50:12  mbayne
+ * Initial revision (needs a lot of work, even I can beat it sometimes).
+ *
  */
 
 #include <exec/memory.h>
@@ -174,18 +177,26 @@ int opponentMakeRequiredMoves( struct RastPort *theRastPort )
 
 int opponentMakePossibleMoves( struct RastPort *theRastPort )
 {
-	Move *aMove;
+	Move *aMove, *move1 = NULL, *move2 = NULL, *move3 = NULL;
 
 	moveInfoInit( reqMoveInfo );
 	moveInfoApplyCriterion( reqMoveInfo, OwnNonEmptySource, PredAlt );
-	if( aMove = moveRemHead( &reqMoveInfo->mi_Moves ))
-	{
-		boardApplyMove( aMove, theRastPort );
-		moveFree( aMove );
-		return TRUE;
+	for (aMove = (Move *)reqMoveInfo->mi_Moves.lh_Head; moveSucc(aMove);
+		 aMove = moveSucc(aMove)) {
+		if( aMove->mv_SourceStack == CurAltSource )
+			move1 = aMove;
+		else if( aMove->mv_SourceStack == CurMainSource )
+			move2 = aMove;
+		else if( aMove->mv_SourceStack == CurDiscard )
+			move3 = aMove;
 	}
 
-	return FALSE;
+	if (move1) boardApplyMove(move1, theRastPort);
+	else if (move2) boardApplyMove(move2, theRastPort);
+	else if (move3) boardApplyMove(move3, theRastPort);
+	else return FALSE;
+		
+	return TRUE;
 }
 
 void opponentApplyAnalysis( struct RastPort *theRastPort )
@@ -221,8 +232,45 @@ void opponentStoreMoveSequence( MoveInfo *theMoveInfo )
 	}
 }
 
-int opponentStacksEquivalent( Stack *leftStacks, Stack *rightStacks )
+int opponentStatesEquivalent (MoveInfo *leftInfo, MoveInfo *rightInfo)
 {
+	Stack *leftStacks, *rightStacks;
+	long  *leftOrder, *rightOrder;
+	int    failure = 0, i;
+	
+	leftStacks = leftInfo->mi_Stacks;
+	rightStacks = rightInfo->mi_Stacks;
+
+	/* check source stacks */
+	failure += (stackTopCard(leftStacks+ 0) != stackTopCard(rightStacks+ 0));
+	failure += (stackTopCard(leftStacks+ 1) != stackTopCard(rightStacks+ 1));
+	failure += (stackTopCard(leftStacks+ 2) != stackTopCard(rightStacks+ 2));
+	failure += (stackTopCard(leftStacks+19) != stackTopCard(rightStacks+19));
+	failure += (stackTopCard(leftStacks+20) != stackTopCard(rightStacks+20));
+	failure += (stackTopCard(leftStacks+21) != stackTopCard(rightStacks+21));
+	if (failure) return FALSE;
+
+	/* check destination stacks */
+	failure += (stackTopCard(leftStacks+ 4) != stackTopCard(rightStacks+ 4));
+	failure += (stackTopCard(leftStacks+ 5) != stackTopCard(rightStacks+ 5));
+	failure += (stackTopCard(leftStacks+ 8) != stackTopCard(rightStacks+ 8));
+	failure += (stackTopCard(leftStacks+ 9) != stackTopCard(rightStacks+ 9));
+	failure += (stackTopCard(leftStacks+12) != stackTopCard(rightStacks+12));
+	failure += (stackTopCard(leftStacks+13) != stackTopCard(rightStacks+13));
+	failure += (stackTopCard(leftStacks+16) != stackTopCard(rightStacks+16));
+	failure += (stackTopCard(leftStacks+17) != stackTopCard(rightStacks+17));
+	if (failure) return FALSE;
+	
+	leftOrder = leftInfo->mi_Order;
+	rightOrder = rightInfo->mi_Order;
+
+	/* check the temp stacks */
+	for (i = 0; i < NUM_TEMP_STACKS; i++)
+		if (stackCompare(leftStacks+leftOrder[i], rightStacks+rightOrder[i]))
+			return FALSE;
+
+	return TRUE;
+#ifdef SLOW_METHOD
 	int i, j, leftEmpties = 0, rightEmpties = 0, matches = 0, entries;
 	short miniStacks[NUM_STACKS], curLeft;
 	int *stackNoPtr, *stackNoPtrJ;
@@ -233,7 +281,7 @@ int opponentStacksEquivalent( Stack *leftStacks, Stack *rightStacks )
 		return FALSE;
 
 	/* Check player two's source stacks for equivalence */
-	if( memcmp( leftStacks+18, rightStacks+18, 3 * sizeof( Stack )))
+	if( memcmp( leftStacks+19, rightStacks+19, 3 * sizeof( Stack )))
 		return FALSE;
 
 	memset( miniStacks, 0, NUM_STACKS * sizeof( short ));
@@ -285,6 +333,7 @@ int opponentStacksEquivalent( Stack *leftStacks, Stack *rightStacks )
 		return TRUE;
 
 	return FALSE;
+#endif
 }
 
 int opponentAlreadySeenMove( MoveInfo *root, MoveInfo *new, int Depth )
@@ -300,7 +349,7 @@ int opponentAlreadySeenMove( MoveInfo *root, MoveInfo *new, int Depth )
 	FPrintf( Output(), "\n" );
 #endif
 	
-	if( opponentStacksEquivalent( new->mi_Stacks, root->mi_Stacks )) {
+	if( opponentStatesEquivalent( new, root )) {
 		equivalentStacks++;
 		return TRUE;
 	}
@@ -312,8 +361,7 @@ int opponentAlreadySeenMove( MoveInfo *root, MoveInfo *new, int Depth )
 			for( aMoveInfo = moveInfoHead( Depths+i );;
 				aMoveInfo = moveInfoSucc( aMoveInfo ))
 			{
-				if( opponentStacksEquivalent( new->mi_Stacks,
-											 aMoveInfo->mi_Stacks )) {
+				if( opponentStatesEquivalent( new, aMoveInfo )) {
 					equivalentStacks++;
 					return TRUE;
 				}
@@ -392,10 +440,13 @@ void opponentAnalyzeHypothesis( MoveInfo *root, MoveInfo *current, int Depth )
 	}
 	
  FINAL_ANALYSIS:
-	if(( current->mi_Stacks[CurMainSource].st_NumCards +
-		current->mi_Stacks[CurAltSource].st_NumCards +
-		current->mi_Stacks[CurDiscard].st_NumCards == 0 )||
-	   ( moveInfoEmptyTempStacks( current ) > EmptyStacks ))
+	if (
+#ifdef CHECK_FOR_WIN
+		(current->mi_Stacks[CurMainSource].st_NumCards +
+		 current->mi_Stacks[CurAltSource].st_NumCards +
+		 current->mi_Stacks[CurDiscard].st_NumCards == 0 ) ||
+#endif
+		( moveInfoEmptyTempStacks( current ) > EmptyStacks ))
 	{
 		opponentStoreMoveSequence( current );
 		Found = TRUE;
@@ -405,7 +456,11 @@ void opponentAnalyzeHypothesis( MoveInfo *root, MoveInfo *current, int Depth )
 	{
 		MoveHighest = current->mi_Score;
 		opponentStoreMoveSequence( current );
-		Found = TRUE;
+		switch (current->mi_Score) {
+		case 1: if (current->mi_Stacks[CurMainSource].st_NumCards) break;
+		case 2: if (current->mi_Stacks[CurAltSource].st_NumCards) break;
+		case 3: Found = TRUE;
+		}
 	}
 }
 

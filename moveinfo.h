@@ -1,7 +1,7 @@
 #ifndef MOVEINFO_H
 #define MOVEINFO_H
 
-/* $Id$
+/* $Id: moveinfo.h,v 39.1 1995/04/25 01:48:51 mbayne Exp mbayne $
  *
  * The information in this file was created by Michael D. Bayne. This
  * information is in the public domain. You are permitted to reuse, rewrite,
@@ -10,7 +10,10 @@
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
  * 
- * $Log$
+ * $Log: moveinfo.h,v $
+ * Revision 39.1  1995/04/25  01:48:51  mbayne
+ * Initial revision.
+ *
  */
 
 #ifndef EXEC_LISTS_H
@@ -35,6 +38,7 @@ typedef struct _MoveInfo
 	int               mi_Score;
 	short             mi_SrcStack;
 	short             mi_DestStack;
+	long              mi_Order[8];
 } MoveInfo;
 
 #define moveInfoHead(l)        (IsListEmpty(l)?0L:(MoveInfo *)(l)->lh_Head)

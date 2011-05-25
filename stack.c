@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: stack.c,v 39.1 1995/04/25 01:45:52 mbayne Exp mbayne $
  *
  * The information in this file was created by Michael D. Bayne. This
  * information is in the public domain. You are permitted to reuse, rewrite,
@@ -7,7 +7,10 @@
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
  * 
- * $Log$
+ * $Log: stack.c,v $
+ * Revision 39.1  1995/04/25  01:45:52  mbayne
+ * Initial revision.
+ *
  */
 
 #include <exec/memory.h>
@@ -16,6 +19,8 @@
 #include <proto/graphics.h>
 #undef Move
 #include <proto/intuition.h>
+
+#include <string.h>
 
 #include "resource.h"
 #include "deck.h"
@@ -150,3 +155,12 @@ Card stackRemoveCard( Stack *theStack )
 
 	return aCard;
 }	
+
+long stackCompare (Stack *leftStack, Stack *rightStack)
+{
+	if (leftStack->st_NumCards < rightStack->st_NumCards) return -1;
+	if (leftStack->st_NumCards > rightStack->st_NumCards) return 1;
+
+	return memcmp(leftStack->st_Cards, rightStack->st_Cards,
+				  leftStack->st_NumCards);
+}

@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: moveinfo.c,v 39.1 1995/04/25 01:52:25 mbayne Exp mbayne $
  *
  * The information in this file was created by Michael D. Bayne. This
  * information is in the public domain. You are permitted to reuse, rewrite,
@@ -7,7 +7,10 @@
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
  * 
- * $Log$
+ * $Log: moveinfo.c,v $
+ * Revision 39.1  1995/04/25  01:52:25  mbayne
+ * Initial revision.
+ *
  */
 
 #include <exec/memory.h>
@@ -22,6 +25,8 @@
 #endif
 
 struct List FreeMoveInfos;
+
+long tmpStackIndexes[] = { 3, 6, 7, 10, 11, 14, 15, 18 };
 
 void moveInfoClassDestruct( void *Dummy )
 {
@@ -159,14 +164,30 @@ void moveInfoApplyCriterion( MoveInfo *theMoveInfo,
 #endif
 }
 
+void moveInfoSort (MoveInfo *theMoveInfo)
+{
+	Stack *stacks[8], *aStack;
+	int    i, j;
+
+	for (i = 0; i < 8; i++)
+		stacks[i] = theMoveInfo->mi_Stacks+tmpStackIndexes[i];
+	for (i = 0; i < 8; i++) for (j = i; j < 8; j++) {
+		if (stackCompare(stacks[j], stacks[i]) > 0) {
+			aStack = stacks[j];
+			stacks[j] = stacks[i];
+			stacks[i] = aStack;
+		}
+	}
+	for (i = 0; i < 8; i++) theMoveInfo->mi_Order[i] = stacks[i]->st_Index;
+}
+
 MoveInfo *moveInfoCopyWithMove( MoveInfo *src, Move *theMove )
 {
 	MoveInfo *new;
 
 	new = moveInfoAlloc();
 
-	if( !new )
-		return 0L;
+	if (!new) return NULL;
 
 	new->mi_Parent = src;
 	new->mi_SrcStack = theMove->mv_SourceStack;
@@ -176,7 +197,8 @@ MoveInfo *moveInfoCopyWithMove( MoveInfo *src, Move *theMove )
 				 sizeof( Stack )*boardNumStacks());
 	stackAddCard( new->mi_Stacks+theMove->mv_DestStack,
 				 stackRemoveCard( new->mi_Stacks+theMove->mv_SourceStack ));
-
+	moveInfoSort(new);
+	
 	return new;
 }
 

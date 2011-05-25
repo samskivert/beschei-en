@@ -1,7 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 
-/* $Id$
+/* $Id: card.h,v 39.1 1995/04/25 01:44:29 mbayne Exp mbayne $
  *
  * The information in this file was created by Michael D. Bayne. This
  * information is in the public domain. You are permitted to reuse, rewrite,
@@ -10,7 +10,10 @@
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
  * 
- * $Log$
+ * $Log: card.h,v $
+ * Revision 39.1  1995/04/25  01:44:29  mbayne
+ * Initial revision.
+ *
  */
 
 typedef enum { SPADES = 0, HEARTS, CLUBS, DIAMONDS, NONE } Suit;
@@ -28,6 +31,7 @@ typedef unsigned char Card;
 #define cardSimple( c ) ((c)&(~(1<<5)))
 #define cardSimplifySuit( c ) (c)&=(~(1<<5))
 #define cardConstruct( r, s, d ) ((Card)((((d)&1)<<6)|(((s)&3)<<4)|((r)&15)))
+#define cardValue(c) ((cardSuit(c)*14)+cardRank(c))
 
 #define CARD_WIDTH 48
 #define CARD_HEIGHT 60
