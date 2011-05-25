@@ -6,7 +6,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: menus.c,v $
  * Revision 39.1  1995/04/25  01:41:24  mbayne
  * Initial revision.
@@ -20,19 +20,19 @@
 
 int BeschABOUT( void )
 {
-	appInfo( "Bescheiﬂen\n\nby Michael D. Bayne\nmbayne@qualcomm.com" );
+    appInfo( "Bescheiﬂen\n\nby Michael D. Bayne\nmbayne@qualcomm.com" );
 
-	return TRUE;
+    return TRUE;
 }
 
 int BeschNEW( void )
 {
-	boardClassReset( Win );
-	appStartGame();
-	return TRUE;
+    boardClassReset( Win );
+    appStartGame();
+    return TRUE;
 }
 
 int BeschQUIT( void )
 {
-	return FALSE;
+    return FALSE;
 }

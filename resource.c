@@ -6,7 +6,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: resource.c,v $
  * Revision 39.1  1995/04/25  01:41:53  mbayne
  * Initial revision.
@@ -23,55 +23,55 @@ struct List Resources;
 
 void resourceClassDestruct( int value )
 {
-	PvtResource *aRes;
+    PvtResource *aRes;
 
-	while( aRes = ( PvtResource * )RemHead( &Resources ))
-	{
-		aRes->rs_Destructor( aRes->rs_Resource );
-		FreeMem( aRes, sizeof( PvtResource ));
-	}
-	
-	exit( value );
+    while( aRes = ( PvtResource * )RemHead( &Resources ))
+    {
+        aRes->rs_Destructor( aRes->rs_Resource );
+        FreeMem( aRes, sizeof( PvtResource ));
+    }
+
+    exit( value );
 }
 
 void resourceClassInit( void )
 {
-	NewList( &Resources );
+    NewList( &Resources );
 }
 
 int resourceDestroy( void *theResource )
 {
-	PvtResource *aRes;
+    PvtResource *aRes;
 
-	if( IsListEmpty( &Resources ))
-		return FALSE;
+    if( IsListEmpty( &Resources ))
+        return FALSE;
 
-	for( aRes = resourceHead( &Resources );; aRes = resourceSucc( aRes ))
-	{
-		if( aRes->rs_Resource == theResource )
-		{
-			Remove(( struct Node * )aRes );
-			aRes->rs_Destructor( aRes->rs_Resource );
-			FreeMem( aRes, sizeof( PvtResource ));
-			return TRUE;
-		}
-		if( aRes == resourceTail( &Resources ))
-			break;
-	}
+    for( aRes = resourceHead( &Resources );; aRes = resourceSucc( aRes ))
+    {
+        if( aRes->rs_Resource == theResource )
+        {
+            Remove(( struct Node * )aRes );
+            aRes->rs_Destructor( aRes->rs_Resource );
+            FreeMem( aRes, sizeof( PvtResource ));
+            return TRUE;
+        }
+        if( aRes == resourceTail( &Resources ))
+            break;
+    }
 
-	return FALSE;
+    return FALSE;
 }
 
 void resourceAdd( void *Resource, FREEFUNC Destructor )
 {
-	PvtResource *theRes;
-	
-	if( theRes = AllocMem( sizeof( PvtResource ), MEMF_CLEAR|MEMF_PUBLIC ))
-	{
-		theRes->rs_Resource = Resource;
-		theRes->rs_Destructor = Destructor;
-		AddHead( &Resources, ( struct Node * )theRes );
-	}
-	else
-		resourceClassDestruct( 2 );
+    PvtResource *theRes;
+
+    if( theRes = AllocMem( sizeof( PvtResource ), MEMF_CLEAR|MEMF_PUBLIC ))
+    {
+        theRes->rs_Resource = Resource;
+        theRes->rs_Destructor = Destructor;
+        AddHead( &Resources, ( struct Node * )theRes );
+    }
+    else
+        resourceClassDestruct( 2 );
 }

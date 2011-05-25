@@ -6,7 +6,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: stack.c,v $
  * Revision 39.1  1995/04/25  01:45:52  mbayne
  * Initial revision.
@@ -36,131 +36,131 @@ StackClass stackClasses[] =
 
 void stackFree( Stack *theStack )
 {
-	if( theStack )
-	{
-		FreeMem( theStack, sizeof( Stack ));
-	}
+    if( theStack )
+    {
+        FreeMem( theStack, sizeof( Stack ));
+    }
 }
 
 void stackReset( Stack *theStack )
 {
-	BltClear( theStack->st_Cards, sizeof( Card )*52, 0L );
-	theStack->st_NumCards = 0;
+    BltClear( theStack->st_Cards, sizeof( Card )*52, 0L );
+    theStack->st_NumCards = 0;
 }
 
 void stackInit( Stack *theStack, NewStack *theNewStack, long Index )
 {
-	stackReset( theStack );
-	theStack->st_Left = theNewStack->ns_Left;
-	theStack->st_Top = theNewStack->ns_Top;
-	theStack->st_Index = ( uchar )Index;
-	theStack->st_ClassIdx = theNewStack->ns_ClassIdx;
-	theStack->st_Owner = theNewStack->ns_Owner;
-	theStack->st_Suit = theNewStack->ns_Suit;
+    stackReset( theStack );
+    theStack->st_Left = theNewStack->ns_Left;
+    theStack->st_Top = theNewStack->ns_Top;
+    theStack->st_Index = ( uchar )Index;
+    theStack->st_ClassIdx = theNewStack->ns_ClassIdx;
+    theStack->st_Owner = theNewStack->ns_Owner;
+    theStack->st_Suit = theNewStack->ns_Suit;
 }
 
 Stack *stackAlloc( uchar Index )
 {
-	Stack *newStack = AllocMem( sizeof( Stack ), MEMF_CLEAR );
+    Stack *newStack = AllocMem( sizeof( Stack ), MEMF_CLEAR );
 
-	newStack->st_Index = ( uchar )Index;
-	
-	resourceAdd( newStack, stackFree );
+    newStack->st_Index = ( uchar )Index;
 
-	return newStack;
+    resourceAdd( newStack, stackFree );
+
+    return newStack;
 }
 
 long stackContainsPoint( Stack *theStack, Point *thePoint )
 {
-	long x = thePoint->x - theStack->st_Left;
-	long y = thePoint->y - theStack->st_Top;
+    long x = thePoint->x - theStack->st_Left;
+    long y = thePoint->y - theStack->st_Top;
 
-	if( stackArrangement( theStack ) == SA_SKEWED )
-	{
-		if( theStack->st_Left > Scr->Width/2 )
-			x -= (( stackEntries( theStack )-1 ) * CARD_WIDTH/3 );
-		else
-			x += (( stackEntries( theStack )-1 ) * CARD_WIDTH/3 );
-	}
+    if( stackArrangement( theStack ) == SA_SKEWED )
+    {
+        if( theStack->st_Left > Scr->Width/2 )
+            x -= (( stackEntries( theStack )-1 ) * CARD_WIDTH/3 );
+        else
+            x += (( stackEntries( theStack )-1 ) * CARD_WIDTH/3 );
+    }
 
-	return ( x >= 0 )&&( y >= 0 )&&( x < CARD_WIDTH )&&( y < CARD_HEIGHT );
+    return ( x >= 0 )&&( y >= 0 )&&( x < CARD_WIDTH )&&( y < CARD_HEIGHT );
 }
 
 void stackRender( Stack *theStack, struct RastPort *theRastPort, long Full )
 {
-	long Left, Delta, i;
-	
-	switch( stackArrangement( theStack ))
-	{
-	case SA_VERTICAL:
-		cardRender( stackGetCard( theStack, 0 ), theRastPort,
-				   theStack->st_Left, theStack->st_Top );
-		break;
-	case SA_SKEWED:
-		Left = theStack->st_Left;
-		Delta = ( Left > Scr->Width/2 )? CARD_WIDTH/3 : -CARD_WIDTH/3;
-		i = max( stackEntries( theStack ), 1 );
-		do
-		{
-			if( Full ||( i == 1 ))
-				cardRender( stackGetCard( theStack, i-1 ), theRastPort, Left,
-						   theStack->st_Top );
-			if( --i )
-				Left += Delta;
-		}
-		while( i );
-		SetAPen( theRastPort, 5 );
-		/* Clear out the last 1/3 card incase an old card was there */
-		if( Delta < 0 )
-		   RectFill( theRastPort, Left+Delta, theStack->st_Top, Left-1,
-					 theStack->st_Top+CARD_HEIGHT-1 );
-		else
-			RectFill( theRastPort, Left+CARD_WIDTH, theStack->st_Top,
-					 Left+CARD_WIDTH+Delta-1, theStack->st_Top+CARD_HEIGHT-1 );
-		break;
-	}
+    long Left, Delta, i;
 
-	if( !theStack->st_NumCards &&( theStack->st_Suit < 4 ))
-	{	
-		struct Image *theImage = SuitImages+theStack->st_Suit;
-		
-		theImage->PlaneOnOff = 0x0;
-		DrawImage( theRastPort, theImage,
-				  theStack->st_Left + CARD_WIDTH/2 - theImage->Width/2,
-				  theStack->st_Top + CARD_HEIGHT/2 - theImage->Height/2 );
-	}
+    switch( stackArrangement( theStack ))
+    {
+    case SA_VERTICAL:
+        cardRender( stackGetCard( theStack, 0 ), theRastPort,
+                   theStack->st_Left, theStack->st_Top );
+        break;
+    case SA_SKEWED:
+        Left = theStack->st_Left;
+        Delta = ( Left > Scr->Width/2 )? CARD_WIDTH/3 : -CARD_WIDTH/3;
+        i = max( stackEntries( theStack ), 1 );
+        do
+        {
+            if( Full ||( i == 1 ))
+                cardRender( stackGetCard( theStack, i-1 ), theRastPort, Left,
+                           theStack->st_Top );
+            if( --i )
+                Left += Delta;
+        }
+        while( i );
+        SetAPen( theRastPort, 5 );
+        /* Clear out the last 1/3 card incase an old card was there */
+        if( Delta < 0 )
+           RectFill( theRastPort, Left+Delta, theStack->st_Top, Left-1,
+                     theStack->st_Top+CARD_HEIGHT-1 );
+        else
+            RectFill( theRastPort, Left+CARD_WIDTH, theStack->st_Top,
+                     Left+CARD_WIDTH+Delta-1, theStack->st_Top+CARD_HEIGHT-1 );
+        break;
+    }
+
+    if( !theStack->st_NumCards &&( theStack->st_Suit < 4 ))
+    {
+        struct Image *theImage = SuitImages+theStack->st_Suit;
+
+        theImage->PlaneOnOff = 0x0;
+        DrawImage( theRastPort, theImage,
+                  theStack->st_Left + CARD_WIDTH/2 - theImage->Width/2,
+                  theStack->st_Top + CARD_HEIGHT/2 - theImage->Height/2 );
+    }
 }
 
 void stackMakeTopCardFaceUp( Stack *theStack, struct RastPort *theRastPort )
 {
-	Card aCard;
+    Card aCard;
 
-	if( aCard = stackRemoveCard( theStack ))
-	{
-		stackAddCard( theStack, cardMakeFaceUp( aCard ));
-		stackRender( theStack, theRastPort, FALSE );
-	}
+    if( aCard = stackRemoveCard( theStack ))
+    {
+        stackAddCard( theStack, cardMakeFaceUp( aCard ));
+        stackRender( theStack, theRastPort, FALSE );
+    }
 }
 
 Card stackRemoveCard( Stack *theStack )
 {
-	Card aCard;
-	
-	if( !theStack->st_NumCards )
-		return 0;
+    Card aCard;
 
-	aCard = theStack->st_Cards[--theStack->st_NumCards];
+    if( !theStack->st_NumCards )
+        return 0;
 
-	theStack->st_Cards[theStack->st_NumCards] = 0;
+    aCard = theStack->st_Cards[--theStack->st_NumCards];
 
-	return aCard;
-}	
+    theStack->st_Cards[theStack->st_NumCards] = 0;
+
+    return aCard;
+}
 
 long stackCompare (Stack *leftStack, Stack *rightStack)
 {
-	if (leftStack->st_NumCards < rightStack->st_NumCards) return -1;
-	if (leftStack->st_NumCards > rightStack->st_NumCards) return 1;
+    if (leftStack->st_NumCards < rightStack->st_NumCards) return -1;
+    if (leftStack->st_NumCards > rightStack->st_NumCards) return 1;
 
-	return memcmp(leftStack->st_Cards, rightStack->st_Cards,
-				  leftStack->st_NumCards);
+    return memcmp(leftStack->st_Cards, rightStack->st_Cards,
+                  leftStack->st_NumCards);
 }

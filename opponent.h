@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: opponent.h,v $
  * Revision 39.1  1995/04/25  01:52:14  mbayne
  * Initial revision.
@@ -21,8 +21,8 @@
 
 typedef struct _moveInfoList
 {
-	struct MinNode mil_Node;
-	struct List mil_List;
+    struct MinNode mil_Node;
+    struct List mil_List;
 } moveInfoList;
 
 #include "protos/opponent_protos.h"

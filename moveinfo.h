@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: moveinfo.h,v $
  * Revision 39.1  1995/04/25  01:48:51  mbayne
  * Initial revision.
@@ -30,15 +30,15 @@
 
 typedef struct _MoveInfo
 {
-	struct MinNode    mi_Node;
-	struct List       mi_Moves;
-	Move             *mi_CurMove;
-	Stack            *mi_Stacks;
-	struct _MoveInfo *mi_Parent;
-	int               mi_Score;
-	short             mi_SrcStack;
-	short             mi_DestStack;
-	long              mi_Order[8];
+    struct MinNode    mi_Node;
+    struct List       mi_Moves;
+    Move             *mi_CurMove;
+    Stack            *mi_Stacks;
+    struct _MoveInfo *mi_Parent;
+    int               mi_Score;
+    short             mi_SrcStack;
+    short             mi_DestStack;
+    long              mi_Order[8];
 } MoveInfo;
 
 #define moveInfoHead(l)        (IsListEmpty(l)?0L:(MoveInfo *)(l)->lh_Head)

@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: stack.h,v $
  * Revision 39.1  1995/04/25  01:45:36  mbayne
  * Initial revision.
@@ -40,41 +40,41 @@ typedef unsigned char uchar;
 
 typedef struct _StackClass
 {
-	uchar sc_Arrangement;
-	uchar sc_Discipline;
+    uchar sc_Arrangement;
+    uchar sc_Discipline;
 } StackClass;
 
 typedef struct _NewStack
 {
-	short ns_Top;
-	short ns_Left;
-	uchar ns_ClassIdx;
-	uchar ns_Owner;
-	long  ns_Suit;
+    short ns_Top;
+    short ns_Left;
+    uchar ns_ClassIdx;
+    uchar ns_Owner;
+    long  ns_Suit;
 } NewStack;
 
 typedef struct _Stack
 {
-	Card st_Cards[52];
-	short st_Top;
-	short st_Left;
-	uchar st_Index;
-	uchar st_ClassIdx;
-	uchar st_Owner;
-	uchar st_NumCards;
-	long  st_Suit;
+    Card st_Cards[52];
+    short st_Top;
+    short st_Left;
+    uchar st_Index;
+    uchar st_ClassIdx;
+    uchar st_Owner;
+    uchar st_NumCards;
+    long  st_Suit;
 } Stack;
 
 #define stackArrangement( s ) (stackClasses[(s)->st_ClassIdx].sc_Arrangement)
 #define stackDiscipline( s ) (stackClasses[(s)->st_ClassIdx].sc_Discipline)
 
 #define stackGetCard(s,cn)\
-	(Card)(stackEntries(s)>(cn) ? (s)->st_Cards[stackEntries(s)-(cn)-1] : 0)
+    (Card)(stackEntries(s)>(cn) ? (s)->st_Cards[stackEntries(s)-(cn)-1] : 0)
 
 #define stackTopCard(s) stackGetCard(s,0)
 
 #define stackBottomCard(s)\
-	(Card)((s)->st_NumCards ? (Card)(s)->st_Cards[0] : 0)
+    (Card)((s)->st_NumCards ? (Card)(s)->st_Cards[0] : 0)
 
 #define stackEntries(s) ((s)->st_NumCards)
 

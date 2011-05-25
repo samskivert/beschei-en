@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: board.h,v $
  * Revision 39.1  1995/04/25  01:42:46  mbayne
  * Initial revision.

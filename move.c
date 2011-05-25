@@ -6,7 +6,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: move.c,v $
  * Revision 39.1  1995/04/25  01:47:37  mbayne
  * Initial revision.
@@ -23,39 +23,39 @@ struct List FreeMoves;
 
 void moveClassDestruct( void *Dummy )
 {
-	Move *aMove;
+    Move *aMove;
 
-	while( aMove = ( Move * )RemHead( &FreeMoves ))
-		moveReallyFree( aMove );
+    while( aMove = ( Move * )RemHead( &FreeMoves ))
+        moveReallyFree( aMove );
 }
 
 int moveClassInit( void )
 {
-	NewList( &FreeMoves );
-	resourceAdd( 0L, moveClassDestruct );
+    NewList( &FreeMoves );
+    resourceAdd( 0L, moveClassDestruct );
 
-	return 0;
+    return 0;
 }
 
 void moveReallyFree( Move *theMove )
 {
-	if( theMove )
-	{
-		FreeMem( theMove, sizeof( Move ));
-	}
+    if( theMove )
+    {
+        FreeMem( theMove, sizeof( Move ));
+    }
 }
 
 Move *moveAlloc( int sourceStack, int destStack )
 {
-	Move *theMove;
-	
-	if( IsListEmpty( &FreeMoves ))
-		theMove = AllocMem( sizeof( Move ), MEMF_CLEAR );
-	else
-		theMove = ( Move * )RemHead( &FreeMoves );
+    Move *theMove;
 
-	theMove->mv_SourceStack = sourceStack;
-	theMove->mv_DestStack = destStack;
-	
-	return theMove;
+    if( IsListEmpty( &FreeMoves ))
+        theMove = AllocMem( sizeof( Move ), MEMF_CLEAR );
+    else
+        theMove = ( Move * )RemHead( &FreeMoves );
+
+    theMove->mv_SourceStack = sourceStack;
+    theMove->mv_DestStack = destStack;
+
+    return theMove;
 }

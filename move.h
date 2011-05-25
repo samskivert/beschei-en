@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: move.h,v $
  * Revision 39.1  1995/04/25  01:47:25  mbayne
  * Initial revision.
@@ -22,9 +22,9 @@
 
 typedef struct _Move
 {
-	struct MinNode mv_Node;
-	short          mv_SourceStack;
-	short          mv_DestStack;
+    struct MinNode mv_Node;
+    short          mv_SourceStack;
+    short          mv_DestStack;
 } Move;
 
 #define moveHead(l)        (IsListEmpty(l)?0L:(Move *)(l)->lh_Head)

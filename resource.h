@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: resource.h,v $
  * Revision 39.1  1995/04/25  01:43:34  mbayne
  * Initial revision.
@@ -27,16 +27,16 @@ typedef void __regargs (*FREEFUNC)( VOID * );
 
 typedef struct _PvtResource
 {
-	struct Node rs_Node;
-	VOID *rs_Resource;
-	FREEFUNC rs_Destructor;
+    struct Node rs_Node;
+    VOID *rs_Resource;
+    FREEFUNC rs_Destructor;
 }
 PvtResource;
 
 #define resourceHead( l )\
-	( IsListEmpty( l ) ? 0L : ( PvtResource * )(l)->lh_Head )
+    ( IsListEmpty( l ) ? 0L : ( PvtResource * )(l)->lh_Head )
 #define resourceTail( l )\
-	( IsListEmpty( l ) ? 0L : ( PvtResource * )(l)->lh_TailPred )
+    ( IsListEmpty( l ) ? 0L : ( PvtResource * )(l)->lh_TailPred )
 #define resourceSucc( n ) (( PvtResource * )(n)->rs_Node.ln_Succ )
 #define resourcePred( n ) (( PvtResource * )(n)->rs_Node.ln_Pred )
 

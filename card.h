@@ -9,7 +9,7 @@
  * this distribution information is pretty much crap anyway and I maintain
  * exclusive rights to everything you see here, but go ahead and use it
  * anyway. I'm too busy doing cool stuff to sue anyone.
- * 
+ *
  * $Log: card.h,v $
  * Revision 39.1  1995/04/25  01:44:29  mbayne
  * Initial revision.
@@ -19,7 +19,7 @@
 typedef enum { SPADES = 0, HEARTS, CLUBS, DIAMONDS, NONE } Suit;
 
 typedef enum { ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN,
-				   JACK, QUEEN, KING } Rank;
+               JACK, QUEEN, KING } Rank;
 
 typedef unsigned char Card;
 
